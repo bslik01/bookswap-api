@@ -39,7 +39,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   // Initialisation des données (exemple)
-  initializeData();
+  // initializeData();
 });
 
 // Fonction pour initialiser des données de test
