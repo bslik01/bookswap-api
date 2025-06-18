@@ -5,15 +5,40 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const requestRoutes = require('./routes/requests');
 const supplyRoutes = require('./routes/supplies');
+const userRoutes = require('./routes/users');
+const feedbackRoutes = require('./routes/feedback');
 const path = require('path');
-const User = require('./models/User');
+const rateLimit = require('express-rate-limit');
+const winston = require('winston');
 
 dotenv.config();
 const app = express();
 
+// Configuration du logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' }),
+  ],
+});
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(new winston.transports.Console({
+    format: winston.format.simple(),
+  }));
+}
+
 // Middleware
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
 // Connexion à MongoDB
 connectDB();
@@ -23,10 +48,12 @@ app.use('/auth', authRoutes);
 app.use('/books', bookRoutes);
 app.use('/requests', requestRoutes);
 app.use('/supplies', supplyRoutes);
+app.use('/users', userRoutes);
+app.use('/feedback', feedbackRoutes);
 
 // Gestion des erreurs globales
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(500).json({ error: 'Erreur serveur', details: err.message });
 });
 
@@ -37,21 +64,18 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  // Initialisation des données (exemple)
+  logger.info(`Server running on port ${PORT}`);
   // initializeData();
 });
 
 // Fonction pour initialiser des données de test
 // async function initializeData() {
 //   const Supply = require('./models/Supply');
-//   const User = require('./models/User');
 //   try {
 //     const supplyCount = await Supply.countDocuments();
-//     const userCount = await User.countDocuments();
 //     if (supplyCount === 0) {
 //       await Supply.insertMany([
-//         { name: 'Cahier A4', e: 'Cahiers', supplier: 'Fournisseur A' },
+//         { name: 'Cahier A4', type: 'Cahiers', supplier: 'Fournisseur A' },
 //         { name: 'Stylo bleu', type: 'Stylos', supplier: 'Fournisseur B' },
 //         { name: 'Sac à dos', type: 'Sacs', supplier: 'Fournisseur C' },
 //       ]);

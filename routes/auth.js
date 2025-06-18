@@ -32,6 +32,7 @@ router.post('/register', async (req, res) => {
       user: { _id: user._id, name, email, phone, address, level },
       token,
     });
+    console.log('registration successful');
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });
   }
@@ -59,6 +60,7 @@ router.post('/login', async (req, res) => {
         user: { _id: user._id, name: user.name, email: user.email, phone: user.phone, address: user.address, level: user.level },
         token,
       });
+      console.log('login successful for user:', user.name);
     } catch (error) {
       res.status(500).json({ error: 'Erreur serveur' });
     }

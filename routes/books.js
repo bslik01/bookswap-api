@@ -81,6 +81,7 @@ router.get('/search', async (req, res) => {
   try {
     const books = await Book.find(filters).populate('owner', 'name');
     res.status(200).json(books);
+    console.log('Books retrieved successfully');
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });
   }
@@ -106,6 +107,7 @@ router.post('/add', auth, async (req, res) => {
 
     await book.save();
     res.status(201).json({ success: true, book });
+    console.log('Book added successfully:', book.title);
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });
   }

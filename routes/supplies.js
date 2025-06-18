@@ -13,6 +13,7 @@ router.get('/list', async (req, res) => {
   try {
     const supplies = await Supply.find(filters);
     res.status(200).json(supplies);
+    console.log('Fournitures récupérées avec succès');
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });
   }
@@ -31,6 +32,7 @@ router.post('/contact', auth, async (req, res) => {
     // Logique pour contacter le fournisseur (ex. envoyer un email ou notification)
     // Pour cet exemple, on retourne une réponse simple
     res.status(200).json({ success: true, message: 'Demande de contact envoyée' });
+    console.log('Demande de contact envoyée pour l’article:', supply.name);
   } catch (error) {
     res.status(500).json({ error: 'Erreur serveur' });
   }
