@@ -7,7 +7,7 @@ const admin = require('firebase-admin');
 const router = express.Router();
 
 // Initialiser Firebase Admin
-const serviceAccount = require('../etc/secrets/bookswap-v1.json');
+const serviceAccount = require('../bookswap-v1.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
