@@ -1,4 +1,6 @@
 /.dist
 /.env
-/etc
 /node_modules
+/combined.log
+/error.log
+/bookswap-v1.json
