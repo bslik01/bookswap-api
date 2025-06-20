@@ -19,6 +19,9 @@ router.put('/profile', auth, async (req, res) => {
     user.level = level || user.level;
 
     await user.save();
+  
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
     res.status(200).json({
       success: true,
       user: {
@@ -29,6 +32,7 @@ router.put('/profile', auth, async (req, res) => {
         address: user.address,
         level: user.level,
       },
+      token,
     });
     console.log('Profil mis à jour avec succès pour l’utilisateur:', user.name);
   } catch (error) {
